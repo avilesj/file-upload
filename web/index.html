@@ -1,0 +1,207 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>File upload</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+        <style>
+         * {
+             padding: 0;
+             border: 0;
+             margin: 0;
+             font-family: Verdana, Geneva, sans-serif;
+         }
+
+         body {
+             background: rgb(0,77,220);
+             background: linear-gradient(43deg, rgba(0,77,220,1) 0%, rgba(0,179,255,1) 100%);
+            height: 100vh;
+         }
+
+         main {
+            width: 100%;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             height: 100%;
+         }
+
+         section {
+             background-color: #fafafa;
+             height: 50%;
+             width: 50%;
+             border-radius: 10px;
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+         }
+
+         .hide {
+             display: none!important;
+         }
+         .progress-container {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             width: 100%;
+             height: 50%;
+             justify-content: space-evenly;
+             margin-top: 10%;
+             animation: fadein 1s;
+         }
+
+         .file-upload-container {
+             height: inherit;
+             width: 100%;
+         }
+
+         .progress-bar-container {
+             width: 90%;
+             height: 5%;
+             box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+             border-radius: 10px;
+         }
+
+         .progress-bar-filling {
+             width: 0%;
+             height: 100%;
+             background: rgb(36,180,54);
+             background: linear-gradient(43deg, rgba(36,180,54,1) 0%, rgba(17,238,26,1) 100%);
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             border-radius: 10px;
+         }
+         .progress-bar-number {
+             font-size: 2.5em;
+             font-weight: bold;
+             color: #004ddc;
+         }
+
+         .button {
+             background-color: #004ddc;
+             font-size: 2em;
+             border-radius: 5px;
+             color: white;
+             font-weight: bold;
+             height: 1.5em;
+             width: 100%;
+             margin-top: 10%;
+         }
+
+         .button:disabled {
+             background-color: grey;
+         }
+         .file {
+             font-size: 2em;
+             border-radius: 5px;
+             color: #000;
+             font-weight: bold;
+             height: 1.5em;
+             width: 100%;
+         }
+
+         .button:hover:enabled {
+             background-color: #003aa6;
+             cursor: pointer;
+         }
+
+         .prompt {
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             flex-direction: column;
+             margin-top: 10%;
+             font-weight: 100;
+             color: #003aa6;
+         }
+
+         @keyframes fadein {
+             from { opacity: 0; }
+             to   { opacity: 1; }
+         }
+
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">
+            You are using an <strong>outdated</strong> browser. Please
+            <a href="http://browsehappy.com/">upgrade your browser</a> to improve
+            your experience.
+            </p>
+        <![endif]-->
+        <main>
+            <section>
+                <div class="file-upload-container">
+                    <div class="prompt">
+                        <h1>Please, select a file to upload</h1>
+                    </div>
+                    <div class="progress-container hide">
+                        <span class="progress-bar-number">0%</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-filling">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <form>
+                    <input class="file" id="file" name="file" type="file" value=""/><br>
+                    <input class="button" type="submit" value="Upload" />
+                </form>
+            </section>
+
+        </main>
+        <script type="text/javascript">
+         const form = document.querySelector("form");
+         const file = document.querySelector("#file");
+         const progressContainer = document.querySelector(".progress-container");
+         const prompt = document.querySelector(".prompt");
+         const progressBarFiller = document.querySelector(".progress-bar-filling");
+         const progressBarNumber = document.querySelector(".progress-bar-number");
+         form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+             const request = new XMLHttpRequest();
+             request.open("POST", "http://localhost:3000/");
+             request.upload.addEventListener("loadstart", e => {
+                 progressContainer.classList.toggle("hide");
+                 prompt.classList.toggle("hide");
+                 form.classList.toggle("hide");
+                 const percentage = Math.trunc((e.loaded/e.total) * 100);
+                 progressBarFiller.style.width = `${percentage}%`;
+                 progressBarNumber.innerHTML = `${percentage}%`;
+             });
+             request.upload.addEventListener("progress", e => {
+                 const percentage = Math.trunc((e.loaded/e.total) * 100);
+                 progressBarFiller.style.width = `${percentage}%`;
+                 progressBarNumber.innerHTML = `${percentage}%`;
+             });
+
+             request.upload.addEventListener("loadend", e => {
+                 progressBarNumber.innerHTML = `Upload finished!`;
+                 setTimeout(reset, 3000);
+             });
+
+             request.send(new FormData(form));
+         })
+
+         function reset() {
+             progressContainer.classList.toggle("hide");
+             prompt.classList.toggle("hide");
+             form.classList.toggle("hide");
+             file.value = null;
+
+         }
+        </script>
+
+    </body>
+</html>
