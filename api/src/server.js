@@ -1,10 +1,8 @@
 import express from "express";
+import { fileUploadController } from "./controllers/file-upload-controller.js";
 
 const app = express();
-
-app.get('/', function(req, res, next) {
-    res.sendStatus(200);
-})
+app.get('/', fileUploadController);
 
 app.listen(3000, () => {
     console.log("Server online");
