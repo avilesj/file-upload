@@ -12,13 +12,13 @@ export const fileUploadController = async (req, res, next) => {
     return res.sendStatus(200);
   }
 
-  const fileMetadata = await fileMetadataService.getFileByHash(fileObject.fileHash);
+  const fileMetadata = await fileMetadataService.getFileMetadataByHash(fileObject.fileHash);
   if (fileMetadata) {
-    await fileMetadataService.saveFileDuplicateEvent(fileObject);
+    await fileMetadataService.saveFileDuplicateEvent(fileMetadata.id);
     return res.sendStatus(200);
   } else {
+     await fileStorageService.uploadFile(fileObject);
     await fileMetadataService.saveFileMetadata(fileObject);
-    await fileStorageService.uploadFile(fileObject);
     return res.sendStatus(200);
   }
 }
