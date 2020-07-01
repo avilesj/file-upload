@@ -1,0 +1,26 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Api to upload files",
+  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=14.4.0"
+  },
+  "scripts": {
+    "start": "node src/server",
+    "dev": "nodemon src/server"
+  },
+  "author": "Jose Aviles",
+  "license": "ISC",
+  "dependencies": {
+    "busboy": "^0.3.1",
+    "express": "^4.17.1",
+    "md5-hex": "^3.0.1",
+    "pg": "^8.2.1",
+    "uuid": "^8.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
