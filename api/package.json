@@ -7,5 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jose Aviles",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "busboy": "^0.3.1",
+    "express": "^4.17.1",
+    "md5-hex": "^3.0.1",
+    "pg": "^8.2.1",
+    "uuid": "^8.2.0"
+  }
 }
