@@ -21,7 +21,8 @@ export const parseFormData = (busboyInstance) => {
         resolve({
             fileBuffer,
             fileSize: fileBuffer.length,
-            fileHash: md5(fileBuffer)
+            fileHash: md5(fileBuffer),
+            isPortableExecutable: isPortableExecutable(fileBuffer),
         });
     });
   })
