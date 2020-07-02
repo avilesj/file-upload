@@ -2,12 +2,27 @@ version: '3.1'
 
 services:
 
+  api:
+    depends_on:
+      - database
+    build: ./api/.
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_USER: "${POSTGRES_USER}"
+      DATABASE_PASSWORD: "${POSTGRES_PASSWORD}"
+      DATABASE_DB: "${POSTGRES_DB}"
+      DATABASE_HOST: "${POSTGRES_HOST}"
+      DATABASE_PORT: "${POSTGRES_PORT}"
+      AWS_KEY: "${AWS_KEY}"
+      AWS_SECRET_KEY: "${AWS_SECRET_KEY}"
+      AWS_S3_BUCKET: "${AWS_S3_BUCKET}"
+
   database:
     build: ./database/.
     restart: always
-    ports:
-      - 5432:5432
     environment:
-      POSTGRES_USER: demo
-      POSTGRES_PASSWORD: demo
-      POSTGRES_DB: demo
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"

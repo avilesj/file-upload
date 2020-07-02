@@ -1,11 +1,11 @@
 import pg from "pg";
 const Pool = pg.Pool;
 const databaseConfig = {
-    user: process.env.POSTGRES_USER,
-    host: process.env.POSTGRES_HOST,
-    database: process.env.POSTGRES_DB,
-    password: process.env.POSTGRES_PASSWORD,
-    port: process.env.POSTGRES_PORT,
+    user: process.env.DATABASE_USER,
+    host: process.env.DATABASE_HOST,
+    database: process.env.DATABASE_DB,
+    password: process.env.DATABASE_PASSWORD,
+    port: process.env.DATABASE_PORT,
 }
 
 const connection = new Pool(databaseConfig);
