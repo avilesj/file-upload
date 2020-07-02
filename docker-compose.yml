@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+
+  database:
+    build: ./database/.
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
