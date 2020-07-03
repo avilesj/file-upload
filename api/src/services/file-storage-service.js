@@ -53,10 +53,10 @@ const uploadFile = (file) => {
   })
 }
 
-const deleteFile = async ({ fileName }) => {
+const deleteFile = ({ fileName }) => {
   const params = {
     Bucket: S3_BUCKET,
-    Key: 'asd',
+    Key: fileName,
   };
   return s3.deleteObject(params).promise();
 }
