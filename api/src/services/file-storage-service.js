@@ -10,7 +10,7 @@ const s3 = new aws.S3({
   secretAccessKey: process.env.AWS_SECRET_KEY,
 });
 
-const storeFileInS3 = async ({ fileBuffer, fileName }) => {
+const storeFileInS3 = ({ fileBuffer, fileName }) => {
   const params = {
     Key: fileName,
     Body: fileBuffer,
@@ -20,38 +20,37 @@ const storeFileInS3 = async ({ fileBuffer, fileName }) => {
   s3.upload(params).send();
 }
 
-const uploadFile = (file) => {
-  return new Promise((resolve, reject) => {
-    const hash = crypto.createHash('sha1');
-    const fileName = uuid();
-    let size = 0;
-    let firstChunkAnalyzed = false;
+const uploadFile = async (file) => new Promise((resolve, reject) => {
+  const hash = crypto.createHash('sha1');
+  const fileName = uuid();
+  let size = 0;
+  let firstChunkAnalyzed = false;
 
-    storeFileInS3({ fileBuffer: file, fileName });
-    hash.setEncoding('hex');
-    file.pipe(hash);
-    file.on("data", (data) => {
-      if (!firstChunkAnalyzed) {
-        if (!isPortableExecutable(data)) {
-          file.resume();
-          reject("Invalid file");
-        }
-        firstChunkAnalyzed = true;
+  storeFileInS3({ fileBuffer: file, fileName });
+  hash.setEncoding('hex');
+  file.pipe(hash);
+  file.on("data", (data) => {
+    if (!firstChunkAnalyzed) {
+      if (!isPortableExecutable(data)) {
+        file.resume();
+        reject("Invalid file");
       }
-      size = size + Buffer.byteLength(data);
-    });
+      firstChunkAnalyzed = true;
+    }
+    size = size + Buffer.byteLength(data);
+  });
 
-    file.on("end", () => {
-      hash.end();
-      resolve({
-        fileName,
-        fileSize: size,
-        fileHash: hash.read(),
-        fileLocation: process.env.AWS_S3_BUCKET,
-      });
+  file.on("end", () => {
+    hash.end();
+    resolve({
+      fileName,
+      fileSize: size,
+      fileHash: hash.read(),
+      fileLocation: process.env.AWS_S3_BUCKET,
     });
-  })
-}
+  });
+});
+
 
 const deleteFile = ({ fileName }) => {
   const params = {

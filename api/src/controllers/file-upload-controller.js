@@ -1,5 +1,5 @@
 import Busboy from "busboy";
-import { getFileStream, validateFile } from "../helpers/file-helper.js";
+import { getFileStream } from "../helpers/file-helper.js";
 import { fileMetadataService } from "../services/file-metadata-service.js";
 import { fileStorageService } from "../services/file-storage-service.js";
 
