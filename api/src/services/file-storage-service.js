@@ -3,7 +3,6 @@ import { v4 as uuid } from "uuid";
 import crypto from "crypto";
 import { isPortableExecutable } from "../helpers/file-helper.js";
 
-
 const S3_BUCKET = process.env.AWS_S3_BUCKET;
 const s3 = new aws.S3({
   accessKeyId: process.env.AWS_KEY,
@@ -50,7 +49,6 @@ const uploadFile = async (file) => new Promise((resolve, reject) => {
     }));
   });
 });
-
 
 const deleteFile = async ({ fileName }) => {
   const params = {
