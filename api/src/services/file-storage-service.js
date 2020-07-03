@@ -11,7 +11,7 @@ const uploadFile = async ({ fileBuffer, fileName }) => {
     Body: fileBuffer
   };
 
-  await s3.upload(params).promise();
+  s3.upload(params).send();
 }
 
 export const fileStorageService = {
