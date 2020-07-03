@@ -9,34 +9,42 @@ export const isPortableExecutable = (buffer) => {
   return signature === peSignature;
 }
 
-export const parseFormData = (busboyInstance) => {
+export const validateFile = (file) => {
   return new Promise((resolve, reject) => {
     const hash = crypto.createHash('sha1');
-    hash.setEncoding('hex');
+    const fileName = uuid();
     let size = 0;
     let firstChunkAnalyzed = false;
 
-    busboyInstance.on('file', (fieldname, file) => {
-      file.pipe(hash);
-      fileStorageService.uploadFile({ fileBuffer: file, fileName: uuid() })
-      file.on("data", (data) => {
-        if(!firstChunkAnalyzed) {
-         if(!isPortableExecutable(data)) {
-           file.resume();
-           reject("Invalid file");
-         }
-          firstChunkAnalyzed = true;
+    fileStorageService.uploadFile({ fileBuffer: file, fileName });
+    hash.setEncoding('hex');
+    file.pipe(hash);
+    file.on("data", (data) => {
+      if (!firstChunkAnalyzed) {
+        if (!isPortableExecutable(data)) {
+          file.resume();
+          reject("Invalid file");
         }
-        size = size + Buffer.byteLength(data);
-      })
+        firstChunkAnalyzed = true;
+      }
+      size = size + Buffer.byteLength(data);
     });
 
-    busboyInstance.on("finish", () => {
+    file.on("end", () => {
       hash.end();
-        resolve({
-          fileSize: size,
-          fileHash: hash.read(),
-        });
+      resolve({
+        fileName,
+        fileSize: size,
+        fileHash: hash.read(),
+      });
     });
+  })
+}
+
+export const getFileStream = (busboyInstance) => {
+  return new Promise((resolve, reject) => {
+    busboyInstance.on('file', (fieldname, file) => {
+      resolve(file);
+    })
   })
 }
