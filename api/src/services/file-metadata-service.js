@@ -1,8 +1,8 @@
-import { database } from "../database.js";
 import { v4 as uuid } from "uuid";
+import { getConnection } from "../database.js";
 
-const getFileMetadataByHash = async (hash) => {
-  const connection = database.getConnection();
+export const getFileMetadataByHash = async (hash) => {
+  const connection = getConnection();
   const queryText = `SELECT * FROM "file_metadata" WHERE hash = $1`;
 
   const queryObject = {
@@ -13,9 +13,9 @@ const getFileMetadataByHash = async (hash) => {
   return result.rows[0];
 };
 
-const saveFileMetadata = async ({ fileHash, fileSize, fileLocation }) => {
+export const saveFileMetadata = async ({ fileHash, fileSize, fileLocation }) => {
   const fileName = uuid();
-  const connection = database.getConnection();
+  const connection = getConnection();
   const queryText = `INSERT INTO "file_metadata"(hash, file_name, file_size, file_location) VALUES($1, $2, $3, $4) RETURNING *`;
 
   const queryObject = {
@@ -27,8 +27,8 @@ const saveFileMetadata = async ({ fileHash, fileSize, fileLocation }) => {
   return result.rows[0];
 }
 
-const saveFileDuplicateEvent = (fileMetadataId) => {
-  const connection = database.getConnection();
+export const saveFileDuplicateEvent = (fileMetadataId) => {
+  const connection = getConnection();
   const queryText = `INSERT INTO "file_duplicate_event"(file_metadata_id) VALUES($1)`;
 
   const queryObject = {
@@ -37,10 +37,4 @@ const saveFileDuplicateEvent = (fileMetadataId) => {
   }
   return connection.query(queryObject);
 
-}
-
-export const fileMetadataService = {
-  getFileMetadataByHash,
-  saveFileMetadata,
-  saveFileDuplicateEvent
 }

@@ -9,7 +9,7 @@ const s3 = new aws.S3({
   secretAccessKey: process.env.AWS_SECRET_KEY,
 });
 
-const storeFileInS3 = ({ fileBuffer, fileName }) => {
+export const storeFileInS3 = ({ fileBuffer, fileName }) => {
   const params = {
     Key: fileName,
     Body: fileBuffer,
@@ -19,13 +19,13 @@ const storeFileInS3 = ({ fileBuffer, fileName }) => {
   return s3.upload(params).promise();
 }
 
-const uploadFile = async (file) => new Promise((resolve, reject) => {
+export const uploadFile = async (file) => new Promise((resolve, reject) => {
   const hash = crypto.createHash('sha1');
   const fileName = uuid();
   let size = 0;
   let firstChunkAnalyzed = false;
 
-  const s3UploadPromise = storeFileInS3({ fileBuffer: file, fileName });
+  let s3UploadPromise;
   hash.setEncoding('hex');
   file.pipe(hash);
   file.on("data", (data) => {
@@ -33,6 +33,8 @@ const uploadFile = async (file) => new Promise((resolve, reject) => {
       if (!isPortableExecutable(data)) {
         file.resume();
         reject("Invalid file");
+      } else {
+        s3UploadPromise = storeFileInS3({ fileBuffer: file, fileName });
       }
       firstChunkAnalyzed = true;
     }
@@ -41,24 +43,21 @@ const uploadFile = async (file) => new Promise((resolve, reject) => {
 
   file.on("end", () => {
     hash.end();
-    s3UploadPromise.then(() => resolve({
-      fileName,
-      fileSize: size,
-      fileHash: hash.read(),
-      fileLocation: process.env.AWS_S3_BUCKET,
-    }));
+    if(s3UploadPromise) {
+      s3UploadPromise.then(() => resolve({
+        fileName,
+        fileSize: size,
+        fileHash: hash.read(),
+        fileLocation: process.env.AWS_S3_BUCKET,
+      }));
+    }
   });
 });
 
-const deleteFile = async ({ fileName }) => {
+export const deleteFile = async ({ fileName }) => {
   const params = {
     Bucket: S3_BUCKET,
     Key: fileName,
   };
   return s3.deleteObject(params).promise();
-}
-
-export const fileStorageService = {
-  uploadFile,
-  deleteFile,
 }
