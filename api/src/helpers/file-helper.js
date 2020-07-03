@@ -1,6 +1,6 @@
 export const isPortableExecutable = (buffer) => {
-  const signature = buffer.toString('hex').slice(0, 9);
-  const peSignature = "4d5a90000";
+  const signature = buffer.toString('hex').slice(0, 8);
+  const peSignature = "4d5a9000";
 
   return signature === peSignature;
 }
