@@ -17,7 +17,7 @@ const storeFileInS3 = ({ fileBuffer, fileName }) => {
     Bucket: S3_BUCKET,
   };
 
-  s3.upload(params).send();
+  return s3.upload(params).promise();
 }
 
 const uploadFile = async (file) => new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ const uploadFile = async (file) => new Promise((resolve, reject) => {
   let size = 0;
   let firstChunkAnalyzed = false;
 
-  storeFileInS3({ fileBuffer: file, fileName });
+  const s3UploadPromise = storeFileInS3({ fileBuffer: file, fileName });
   hash.setEncoding('hex');
   file.pipe(hash);
   file.on("data", (data) => {
@@ -42,17 +42,17 @@ const uploadFile = async (file) => new Promise((resolve, reject) => {
 
   file.on("end", () => {
     hash.end();
-    resolve({
+    s3UploadPromise.then(() => resolve({
       fileName,
       fileSize: size,
       fileHash: hash.read(),
       fileLocation: process.env.AWS_S3_BUCKET,
-    });
+    }));
   });
 });
 
 
-const deleteFile = ({ fileName }) => {
+const deleteFile = async ({ fileName }) => {
   const params = {
     Bucket: S3_BUCKET,
     Key: fileName,
