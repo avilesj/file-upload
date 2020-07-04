@@ -171,7 +171,6 @@
             e.preventDefault();
 
              const request = new XMLHttpRequest();
-             request.open("POST", "/upload");
              request.upload.addEventListener("loadstart", e => {
                  progressContainer.classList.toggle("hide");
                  prompt.classList.toggle("hide");
@@ -190,15 +189,24 @@
                  progressBarFiller.style.width = `${percentage}%`;
              });
 
-             request.upload.addEventListener("loadend", e => {
-                 progressBarNumber.innerHTML = `Upload finished!`;
-                 setTimeout(reset, 3000);
-             });
+             request.onreadystatechange = function (e) {
+                 if(request.readyState === XMLHttpRequest.DONE) {
+                     if(request.status !== 200) {
+                         progressBarNumber.innerHTML = `There was an error uploading the file!`;
+                         progressBarFiller.style.background = `linear-gradient(43deg, rgba(180,36,36,1) 0%, rgba(238,17,17,1) 100%)`;
+                     } else {
+                         progressBarNumber.innerHTML = `Upload finished!`;
+                     }
+                     setTimeout(reset, 3000);
+                 }
+             }
 
+             request.open("POST", "/upload", true);
              request.send(new FormData(form));
          })
 
          function reset() {
+             progressBarFiller.style.background = `linear-gradient(43deg, rgba(36,180,54,1) 0%, rgba(17,238,26,1) 100%)`;
              progressContainer.classList.toggle("hide");
              prompt.classList.toggle("hide");
              form.classList.toggle("hide");
