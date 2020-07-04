@@ -20,6 +20,9 @@ export const fileUploadController = async (req, res, next) => {
     return res.sendStatus(200);
   } catch (e) {
     console.error(e);
+    if (e.fileName) {
+      await deleteFile(e);
+    }
     return res.sendStatus(500);
   }
 }
