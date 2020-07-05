@@ -4,7 +4,7 @@ This app allows you to upload a file to AWS S3 and verify if it is a Portable Ex
 # Features
 - PE format validation
 - File streaming
-- SHA1 hashing for storing uniqueness
+- SHA256 hashing for storing uniqueness
 - Duplicate file event registration
 - File metadata storage, such as location and size (bytes)
 
