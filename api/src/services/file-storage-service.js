@@ -20,7 +20,7 @@ const storeFileInS3 = ({ fileBuffer, fileName }) => {
 }
 
 export const uploadFile = async (file) => new Promise((resolve, reject) => {
-  const hash = crypto.createHash('sha1');
+  const hash = crypto.createHash('sha256');
   const fileName = uuid();
   let size = 0;
   let firstChunkAnalyzed = false;
