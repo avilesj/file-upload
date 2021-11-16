@@ -14,7 +14,7 @@
   "author": "Jose Aviles",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.709.0",
+    "aws-sdk": "^2.814.0",
     "busboy": "^0.3.1",
     "express": "^4.17.1",
     "pg": "^8.2.1",
